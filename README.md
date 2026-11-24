@@ -1,172 +1,228 @@
-# ECG Heartbeat Classification Using 1D CNN
+<div align="center">
 
-A deep learning project that classifies ECG (Electrocardiogram) heartbeat signals into five heartbeat categories using a **1D Convolutional Neural Network (CNN)** built with TensorFlow and Keras.
+# ❤️ ECG Heartbeat Classification
 
-## Project Overview
+### Deep Learning-Based Heartbeat Pattern Classification with a 2D CNN
 
-Electrocardiogram (ECG) signals record the electrical activity of the heart. This project uses heartbeat signal samples to train a neural network to distinguish between five heartbeat classes.
+<p>
+  <img src="https://img.shields.io/badge/Python-3.x-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/TensorFlow-Keras-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white" alt="TensorFlow">
+  <img src="https://img.shields.io/badge/CNN-Conv2D-6C5CE7?style=for-the-badge" alt="CNN">
+  <img src="https://img.shields.io/badge/Notebook-Jupyter-F37626?style=for-the-badge&logo=jupyter&logoColor=white" alt="Jupyter">
+</p>
 
-The notebook implements the following workflow:
+**An educational deep-learning project that explores the classification of ECG-like heartbeat signals into five predefined categories.**
 
-1. Import the required Python libraries.
-2. Download the MIT-BIH heartbeat dataset.
-3. Load and inspect the training and testing data.
-4. Visualize heartbeat class distribution and representative ECG signals.
-5. Prepare the data for a 1D CNN.
-6. Build, compile, and train the CNN model.
-7. Evaluate predictions using a classification report and confusion matrix.
+</div>
 
-## Heartbeat Classes
+---
 
-The notebook uses five target classes:
+## 📌 Project Overview
 
-| Label | Category |
-|---:|---|
-| 0 | Normal (N) |
-| 1 | Supraventricular Premature (S) |
-| 2 | Premature Ventricular Contraction (V) |
-| 3 | Fusion Beat (F) |
-| 4 | Unclassifiable Beat (Q) |
+Electrocardiography (ECG) records the electrical activity of the heart over time. ECG waveforms contain patterns that can be studied to understand different heartbeat types.
 
-## Dataset
+This project builds a neural-network workflow to classify fixed-length, one-dimensional heartbeat signals into five categories. It uses Python and TensorFlow/Keras to prepare the signal data, construct a Convolutional Neural Network (CNN), train the model, and visualize its classification performance.
 
-The notebook attempts to download the MIT-BIH heartbeat CSV files from the following repository:
+> **Important dataset note:** The currently uploaded notebook generates synthetic ECG-like signals with NumPy. It does **not** download or use the real MIT-BIH Arrhythmia Database. Therefore, its results are demonstrations on synthetic data and must not be interpreted as clinical performance or MIT-BIH benchmark results.
 
-- Training data: [mitbih_train.csv](https://raw.githubusercontent.com/shayanfazeli/heartbeat/master/mitbih_train.csv)
-- Testing data: [mitbih_test.csv](https://raw.githubusercontent.com/shayanfazeli/heartbeat/master/mitbih_test.csv)
-- Dataset repository: [shayanfazeli/heartbeat](https://github.com/shayanfazeli/heartbeat)
+## 🎯 Project Objectives
 
-It first tries the `media.githubusercontent.com` mirror and then falls back to the `raw.githubusercontent.com` URLs.
+- Generate and explore fixed-length ECG-like signal samples.
+- Visualize the distribution of the five heartbeat labels.
+- Compare representative signal patterns across classes.
+- Prepare signal arrays and one-hot encoded targets for a CNN.
+- Build and train a 2D Convolutional Neural Network.
+- Evaluate predictions using a classification report and confusion matrix.
+- Visualize training accuracy and loss over epochs.
 
-Each row is expected to contain **187 signal values followed by one class label**. The notebook reads the CSV files without headers and separates the final column as the target.
+## 🧠 Heartbeat Categories
 
-### Synthetic fallback
+The notebook uses the following numeric-label mapping:
 
-If both download attempts fail, the notebook generates a small synthetic dataset:
+| Label | Category | Abbreviation |
+|:---:|---|:---:|
+| `0` | Normal | N |
+| `1` | Supraventricular Premature | S |
+| `2` | Premature Ventricular Contraction | V |
+| `3` | Fusion Beat | F |
+| `4` | Unclassifiable Beat | Q |
 
-- 500 training samples
-- 100 testing samples
-- 187 signal values per sample
-- Five possible class labels
+These are the class names assigned by the notebook. Because the current samples are synthetic, they should not be treated as medically annotated real heartbeats.
 
-The synthetic data is generated from mathematical waveforms with added noise and variation. It is a fallback for running the notebook, **not a substitute for real MIT-BIH data or a clinically validated dataset**. Check which dataset was loaded before interpreting model performance.
+## 🗂️ Project Workflow
 
-## Model Architecture
+```mermaid
+flowchart TD
+    A[Start: Import Libraries] --> B[Generate Synthetic ECG-like Signals]
+    B --> C[Separate Signal Features and Labels]
+    C --> D[Explore Class Distribution and Waveforms]
+    D --> E[Reshape Signals to 2D CNN Input]
+    E --> F[One-Hot Encode Labels]
+    F --> G[Build Conv2D Model]
+    G --> H[Train Model]
+    H --> I[Plot Accuracy and Loss]
+    I --> J[Generate Predictions]
+    J --> K[Classification Report]
+    K --> L[Confusion Matrix]
+```
 
-The project uses a Sequential 1D CNN designed for one-dimensional ECG signal input.
+## 🧰 Tech Stack
+
+| Technology | Purpose |
+|---|---|
+| **Python** | Main programming language |
+| **NumPy** | Numerical operations and synthetic signal generation |
+| **Pandas** | Organizing generated samples in tabular form |
+| **Matplotlib** | Plotting ECG waveforms and training curves |
+| **Seaborn** | Statistical plots and confusion-matrix heatmap |
+| **TensorFlow / Keras** | Building and training the CNN |
+| **scikit-learn** | Classification report and confusion matrix |
+| **Jupyter Notebook** | Interactive development environment |
+
+## 🏗️ Model Architecture
+
+The notebook defines a Sequential **2D CNN**. Each signal contains 187 values and is reshaped to `(187, 1, 1)` before being passed to the model.
 
 | Layer | Configuration |
 |---|---|
-| Input | 187 time points, 1 channel |
-| Conv1D | 64 filters, kernel size 6, ReLU |
-| Batch Normalization | — |
-| MaxPooling1D | Pool size 3, stride 2 |
-| Conv1D | 128 filters, kernel size 3, ReLU |
-| Batch Normalization | — |
-| MaxPooling1D | Pool size 2, stride 2 |
-| Flatten | — |
-| Dense | 64 units, ReLU |
-| Dropout | 0.3 |
-| Output Dense | 5 units, Softmax |
+| Input | `187 × 1 × 1` |
+| Conv2D | 64 filters, kernel size `(6, 1)`, ReLU, same padding |
+| Batch Normalization | After first convolution |
+| MaxPooling2D | Pool size `(2, 1)` |
+| Conv2D | 128 filters, kernel size `(3, 1)`, ReLU, same padding |
+| Batch Normalization | After second convolution |
+| MaxPooling2D | Pool size `(2, 1)` |
+| Flatten | Converts feature maps into a vector |
+| Dense | 128 units, ReLU |
+| Dropout | Rate `0.35` |
+| Output | 5 units, Softmax |
 
-### Training configuration
+### Training Configuration
 
-- Optimizer: Adam
-- Loss function: Categorical Crossentropy
-- Metric: Accuracy
-- Epochs: 15
-- Batch size: 32
-- Input shape: `(187, 1)`
+| Parameter | Value |
+|---|---:|
+| Training samples | 500 |
+| Test samples | 100 |
+| Samples per signal | 187 |
+| Number of classes | 5 |
+| Epochs | 15 |
+| Batch size | 32 |
+| Optimizer | Adam |
+| Learning rate | 0.001 |
+| Loss function | Categorical cross-entropy |
+| Metric | Accuracy |
 
-The integer labels are converted to categorical (one-hot) vectors before training.
+## 📊 Notebook Visualizations
 
-## Technologies and Libraries
+The notebook generates the following visual outputs:
 
-- Python
-- NumPy
-- Pandas
-- Matplotlib
-- Seaborn
-- SciPy
-- Requests
-- TensorFlow / Keras
-- Scikit-learn
+1. **Class distribution:** Number of generated samples assigned to each class.
+2. **Representative waveforms:** One generated signal example for each available class.
+3. **Training and validation accuracy:** Accuracy tracked across epochs.
+4. **Training and validation loss:** Categorical cross-entropy tracked across epochs.
+5. **Confusion matrix:** Heatmap comparing actual generated labels with predicted labels.
 
-## Getting Started
+The classification report also displays precision, recall, F1-score, and support for each class.
+
+*Metric values are intentionally not included here because they depend on the actual notebook execution and are not hard-coded in this README.*
+
+## 🚀 Getting Started
 
 ### 1. Clone the repository
 
 ```bash
 git clone <your-repository-url>
-cd <your-project-folder>
+cd <your-repository-folder>
 ```
 
-Replace the placeholders with your GitHub repository URL and folder name.
-
-### 2. Install dependencies
+### 2. Create a virtual environment (recommended)
 
 ```bash
-pip install numpy pandas matplotlib seaborn scipy requests tensorflow scikit-learn jupyter
+python -m venv .venv
 ```
 
-### 3. Open Jupyter Notebook
+Activate it:
+
+**Windows**
+```bash
+.venv\Scripts\activate
+```
+
+**macOS / Linux**
+```bash
+source .venv/bin/activate
+```
+
+### 3. Install dependencies
+
+```bash
+pip install numpy pandas matplotlib seaborn scipy tensorflow scikit-learn jupyter
+```
+
+### 4. Launch Jupyter Notebook
 
 ```bash
 jupyter notebook
 ```
 
-Open the ECG notebook (`ecg (1).ipynb`) and run the cells in order.
+Open the project `.ipynb` file and run the cells from top to bottom.
 
-The notebook downloads the dataset automatically when network access is available. Otherwise, it attempts to generate the synthetic fallback dataset.
-
-## Project Structure
+## 📁 Suggested Repository Structure
 
 ```text
 ECG-Heartbeat-Classification/
 │
-├── ecg (1).ipynb       # Data processing, CNN training and evaluation
-├── mitbih_train.csv   # Downloaded training data (generated at runtime)
-├── mitbih_test.csv    # Downloaded testing data (generated at runtime)
-└── README.md          # Project documentation
+├── ecg_heartbeat_classification.ipynb
+├── README.md
+├── requirements.txt
+│
+└── assets/
+    ├── class_distribution.png
+    ├── sample_waveforms.png
+    ├── training_accuracy.png
+    ├── training_loss.png
+    └── confusion_matrix.png
 ```
 
-The CSV files are created in the notebook's current working directory when the notebook runs. They do not need to be committed if you prefer to download them at runtime.
+The `assets/` images can be added after exporting the corresponding notebook plots. The notebook itself currently displays plots inline.
 
-## Visualizations and Evaluation
+## ⚠️ Limitations & Important Considerations
 
-The notebook generates:
+- **Synthetic data:** The notebook creates 500 training and 100 test samples using a mathematical signal-generation function and Gaussian noise. It does not currently load real ECG recordings.
+- **Not clinically validated:** Synthetic-data results do not establish the ability to identify real arrhythmias or support medical decisions.
+- **Validation leakage:** The current training cell passes the test set as `validation_data` to `model.fit`. This means the test set is observed during training. For a reliable final evaluation, split the training data into training and validation subsets, then reserve the test set for final evaluation only.
+- **Synthetic class balance:** Labels are sampled using probabilities `[0.70, 0.10, 0.08, 0.07, 0.05]`, so the generated classes are intentionally imbalanced.
+- **Reproducibility:** NumPy is seeded with `42` for data generation. TensorFlow model initialization and training are not explicitly seeded in the current notebook.
 
-- Training dataset class-distribution plot
-- ECG heartbeat signal comparison across the five categories
-- Training and validation accuracy curves
-- Training and validation loss curves
-- Classification report with precision, recall, and F1-score
-- Confusion matrix
+## 🔮 Future Improvements
 
-These outputs help inspect class imbalance, training behavior, and classification performance.
+- Replace the synthetic generator with a documented real ECG dataset, such as the MIT-BIH Arrhythmia Database.
+- Use patient-wise or record-wise train/validation/test splitting when working with real recordings.
+- Keep the final test set completely separate from model training and model selection.
+- Add class-wise performance analysis and consider class weighting where appropriate.
+- Compare the current 2D CNN with a 1D CNN and conventional machine-learning baselines.
+- Add model checkpointing and save the trained model.
+- Create an inference interface for appropriately formatted ECG segments.
+- Record dataset provenance, preprocessing steps, software versions, and experiment settings.
 
-## Important Notes and Limitations
+## 📚 References & Resources
 
-- The notebook uses the test dataset as `validation_data` during model training and later evaluates predictions on that same dataset. For an unbiased final evaluation, split the training data into training and validation sets, and reserve the test set for final evaluation only.
-- The synthetic fallback is small and artificially generated. Results obtained from it should not be interpreted as performance on real ECG recordings.
-- The notebook does not implement a real-time ECG acquisition system or clinical diagnostic workflow.
-- Model accuracy and other metric values are not stated here because they depend on the actual dataset and training run.
+- [TensorFlow Documentation](https://www.tensorflow.org/)
+- [Keras Documentation](https://keras.io/)
+- [NumPy Documentation](https://numpy.org/doc/)
+- [Pandas Documentation](https://pandas.pydata.org/docs/)
+- [Matplotlib Documentation](https://matplotlib.org/stable/)
+- [Seaborn Documentation](https://seaborn.pydata.org/)
+- [scikit-learn Documentation](https://scikit-learn.org/stable/)
 
-## Future Improvements
+For future experiments using real ECG data, consult the [PhysioNet MIT-BIH Arrhythmia Database](https://physionet.org/content/mitdb/1.0.0/), and follow its access and citation requirements.
 
-- Create a separate validation split from the training dataset.
-- Add per-class performance analysis to better understand minority-class predictions.
-- Save the trained model for later inference.
-- Add a function to classify a new ECG sample.
-- Experiment with class weighting or resampling to address class imbalance.
-- Test the model on an independent dataset.
+---
 
-## Disclaimer
+<div align="center">
 
-This project is for educational and research purposes only. It is not a medical device and must not be used to diagnose, treat, or make clinical decisions about heart conditions.
+### Built with Python, TensorFlow & curiosity ❤️
 
-## Author
+**ECG Heartbeat Classification — Academic Machine Learning Project**
 
-**Srijit Dam**
-
-If you found this project useful, consider giving the repository a ⭐ on GitHub.
+</div>
